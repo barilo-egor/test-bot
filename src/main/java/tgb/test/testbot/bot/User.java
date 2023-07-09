@@ -5,16 +5,22 @@ import java.util.Objects;
 
 public class User {
     private long chatId;
-    private String command;
+    private Command command;
     private int step = 0;
+    private  String name;
 
-    public User(long chatId, String command) {
+    public User(long chatId, Command command,String name,int step) {
         this.chatId = chatId;
         this.command = command;
+        this.name = name;
+        this.step = step;
     }
 
     public User() {
 
+    }
+
+    public User(String text, long chatId,Command command,int step) {
     }
 
     public long getChatId() {
@@ -22,22 +28,27 @@ public class User {
     }
 
     public void setChatId(long chatId) {
+
         this.chatId = chatId;
     }
 
-    public String getCommand() {
+    public Command getCommand() {
+
         return command;
     }
 
-    public void setCommand(String command) {
+    public void setCommand(Command command) {
+
         this.command = command;
     }
 
     public int getStep() {
+
         return step;
     }
 
     public void setStep(int step) {
+
         this.step = step;
     }
 
@@ -51,11 +62,15 @@ public class User {
 
     @Override
     public String toString() {
-        return "User{" +
-                "id=" + chatId +
-                ", command='" + command + '\'' +
-                ", stap=" + step +
-                '}';
+        return "User{" + "id=" + chatId + ", command='" + command + '\'' + ", step=" + step + ", name" + name + '}';
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     @Override
