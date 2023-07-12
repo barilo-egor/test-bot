@@ -6,7 +6,8 @@ public class UserDataBase {
     static ArrayList<User> userList = new ArrayList<>();
 
     static {
-
+        User gleb = new User(431259592,Command.START,"Gleb Paukov",0);
+        userList.add(gleb);
         User egor = new User(1654967182,Command.START, "Егор Ходиков",0);
         userList.add(egor);
         User egor2 = new User(393928596,Command.START, "Eгор Барило",0);

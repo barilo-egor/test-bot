@@ -6,13 +6,11 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-import java.util.ArrayList;
-
 @Service
 public class Bot extends TelegramLongPollingBot {
     private UserDataBase userDataBase = new UserDataBase();
-
-
+    String type = null;
+    String name = null;
     @Override
     public String getBotUsername() {
         return "testBotg234_bot";
@@ -24,76 +22,65 @@ public class Bot extends TelegramLongPollingBot {
         return "6023855767:AAGU3BLB3uUa7fQ0JgNSutizYk3AY45reBQ";
     }
 
+
     @Override
     public void onUpdateReceived(Update update) {
+        AmphibianDataBase amphibianDataBase = new AmphibianDataBase();
         Command command;
         long chatId = update.getMessage().getChatId();
+        String text = update.getMessage().getText();
+        String answer = run(text, chatId);
+        int step;
         User currentUser = userDataBase.getByChatId(chatId);
-        if (currentUser != null && !currentUser.getCommand().equals(Command.START)) {
+        Animal animal = new Animal();
+        if (currentUser != null && currentUser.getStep() != 0 ) {
             command = currentUser.getCommand();
+            step = currentUser.getStep();
         } else {
             command = Command.getFromUpdate(update);
+            step = 0;
         }
         if (command == null) {
             sendMessage(chatId, "Неверная команда");
             return;
         }
 
+
         switch (command) {
             case START:
-                String name;
-                if (currentUser == null) {
-                    name = "Guest";
-                    update.getMessage().getFrom().getUserName();
-                } else {
-                    name = currentUser.getName();
-                }
-                sendMessage(chatId, "Привет  " + name +" " + "(" + update.getMessage().getFrom().getUserName() + ")" + " \nВозможные команды \n/findall \n/createuser \n/isexist \n/getid");
+                sendMessage(chatId, "Красаная Книга РБ \n/amphibians (Земноводные). \n/birds (Птицы). \n/plants (Растения).\n/add (Добавить живтоное)");
+                command = Command.valueOf(update.getMessage().getText());
                 break;
-            case CREATE_USER:
-                if (currentUser == null){
-                    currentUser = userDataBase.add(chatId, Command.START, "Guest",0);
-                }
-                if (currentUser != null) {
-                    sendMessage(chatId, "Вы уже зарегистрированы");
-                } else {
-                }
-                sendMessage(chatId, "Введите имя для регистрации");
+            case AMPHIBIANS:
+                sendMessage(chatId, amphibianDataBase.printAmphibians());
+                break;
+            case BUFO:
+                sendMessage(chatId, "Особи достаточно крупные, длина тела жабы может достигать 19 см. ");
+                break;
+            case BIRDS:
+                sendMessage(chatId, "Птицы:");
+                break;
+            case PLANTS:
+                sendMessage(chatId, "Растения: ");
+                break;
+            case ADD_ANIMAL:
+                int number = 0;
+                if (step == 0) {
+                    sendMessage(chatId, "Введите имя");
+                    currentUser.setStep(currentUser.getStep()+1);
+                    currentUser.setCommand(Command.ADD_ANIMAL);
+                }else if (step == 1) {
+                    name = update.getMessage().getText();
+                    sendMessage(chatId, "Введите кол-во особей");
 
-                String name1 = update.getMessage().getText();
-                break;
-            case GET_ID:
-                sendMessage(chatId, "Ваш id: " + chatId);
-                break;
-            case IS_EXIST:
-                boolean isRegistred = false;
-                sendMessage(chatId, "Проверка регистрации");
-                ArrayList<User> users1 = new ArrayList<>();
-                for (User user1 : userDataBase.findAll()) {
-                    if (user1.equals(userDataBase.getByChatId(chatId))) {
-                        isRegistred = true;
-                        break;
-                    }
+                } else if (step == 2) {
+                    number = Integer.parseInt(update.getMessage().getText());
+                    sendMessage(chatId, "Введите вид");
+                } else if (step == 3) {
+                    type = update.getMessage().getText();
+                    amphibianDataBase.addAmphibians(name, number, type);
                 }
-                if (isRegistred) {
-                    sendMessage(chatId, "Зареган");
-                } else {
-                    sendMessage(chatId, "Не зареган");
-                }
-                break;
-
-            case FIND_ALL:
-                ArrayList<User> users = new ArrayList<>();
-                int numMenu = 1;
-                sendMessage(chatId, "Пользователи Бота:  \n");
-                for (User user1 : userDataBase.findAll()) {
-                    sendMessage(chatId, numMenu + ". " +
-                            "Имя: " + user1.getName() +
-                            "\n    Шаг: " + user1.getStep() +
-                            "\n    Команда: " + user1.getCommand() +
-                            "\n    ID: " + user1.getChatId());
-                    numMenu++;
-                }
+                currentUser.setStep(currentUser.getStep()+1);
                 break;
         }
     }

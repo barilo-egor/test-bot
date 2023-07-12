@@ -3,12 +3,12 @@ package tgb.test.testbot.bot;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 public enum Command {
-    FIND_ALL ("/findall",true),
+    AMPHIBIANS ("/amphibians",false),
     START("/start", false),
-    CREATE_USER("/createuser", true),
-    IS_EXIST("/isexist", true),
-    GET_ID("/getid", false);
-
+    BIRDS("/birds", false),
+    ADD_ANIMAL("/add", true),
+    PLANTS ("/plants", false),
+    BUFO("/BufoVerrucosissimus",false);
     private final String userCommand;
     private final boolean isAdmin;
 
@@ -17,9 +17,7 @@ public enum Command {
         this.isAdmin = isAdmin;
     }
 
-    public boolean getIsAdmin() {
-        return isAdmin;
-    }
+
 
     public String getUserCommand() {
         return userCommand;
